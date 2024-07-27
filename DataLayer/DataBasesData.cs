@@ -47,10 +47,11 @@ namespace DataLayer
                 using (SqlConnection Conn = new SqlConnection(Connstr))
                 {
                     string Query = $@"USE {DatabaseName};
-                                     SELECT COUNT(*) AS TABLECOUNT FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE';";
+                                     SELECT TABLE_CATALOG, TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE';";
                     Conn.Open();
                     using (SqlCommand cmd = new SqlCommand(Query, Conn))
                     {
+                        cmd.Parameters.AddWithValue("DataBase", DatabaseName);
                         using (SqlDataReader reader = cmd.ExecuteReader())
                         {
                             DT.Load(reader);
@@ -119,12 +120,14 @@ namespace DataLayer
             }
         }
 
-        static public int GetCountOfTable(string DatabaseName, string TableName)
+        static public int GetCountOfTable(string DatabaseName)
         {
             using (SqlConnection Conn = new SqlConnection(Connstr))
             {
                 string query = $@"USE {DatabaseName};
-                                 SELECT COUNT(*)"
+                                 	SELECT	 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE';";
+                using (SqlCommand cmd = new SqlCommand(query, Conn))
+                    return (int)cmd.ExecuteScalar();
             }
         }
 

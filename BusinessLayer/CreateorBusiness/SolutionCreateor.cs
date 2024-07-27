@@ -69,6 +69,7 @@ namespace BusinessLayer.CreateorBusiness
                 if (string.IsNullOrEmpty(TemplatePath))
                     throw new InvalidOperationException("Template Path doesn't found");
 
+
                 string ProjectPath = Path.Combine(GetSolutionPath(SolutionPath), Name);
                 VSObj.Solution.AddFromTemplate(TemplatePath, ProjectPath, Name);
             }
@@ -85,8 +86,7 @@ namespace BusinessLayer.CreateorBusiness
             }
         }
         
-        static public void CreateFiles(string SolutionPath, string ProjectName, string FileName, 
-            string Content, enReferenceType RefType, string refrence)
+        static public void CreateFiles(string SolutionPath, string ProjectName, string FileName, string Content)
         {
             DTE2 VSObj = GetDTEInstance();
             try
@@ -106,12 +106,6 @@ namespace BusinessLayer.CreateorBusiness
 
                 // Create File Path 
                 string FilePath = Path.Combine(GetSolutionPath(SolutionPath), ProjectName, FileName + ".cs");
-
-                string projectPath = Path.Combine(GetSolutionPath(SolutionPath), ProjectName, $"{ProjectName}.csproj");
-                if (RefType == enReferenceType.ItemGroup)
-                    AddReferenceToProjectFile(projectPath, refrence);
-                else if (RefType == enReferenceType.NugetPackage)
-                    AddNugetReferenceToProjectFile(projectPath, refrence);
 
                 // Write The Content of file in file
                 File.WriteAllText(FilePath, Content);
@@ -157,13 +151,21 @@ namespace BusinessLayer.CreateorBusiness
 
             // Ensure that there is an ItemGroup for references
             XElement itemGroup = new XElement("ItemGroup");
-            XElement referenceElement = new XElement("Reference",
+            XElement referenceElement = new XElement("ProjectReference",
                 new XAttribute("Include", reference));
             itemGroup.Add(referenceElement);
 
             // Add the ItemGroup to the project file
             projectElement.Add(itemGroup);
             projectFile.Save(projectFilePath);
+        }
+
+        static public void Addreference(string projectFilePath,enReferenceType RefType, string reference)
+        {
+            if (RefType == enReferenceType.ItemGroup)
+                AddReferenceToProjectFile(projectFilePath, reference);
+            else
+                AddNugetReferenceToProjectFile(projectFilePath, reference); 
         }
     }
 }

@@ -34,6 +34,7 @@ namespace BusinessLayer
             }
             catch(Exception ex) { throw ex; }
         }
+
         static public Databases GetDatabase(int Id)
         {
             string name = "";
@@ -81,6 +82,18 @@ namespace BusinessLayer
             }
         }
 
+        public int NumbersOfTables()
+        {
+            try
+            {
+                return DataBasesData.GetCountOfTable(Name);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         public Databases(string name)
         {
             try
@@ -101,6 +114,7 @@ namespace BusinessLayer
                 throw ex;
             }
         }
+
         private Databases(int ID, string name, DateTime Create_Date)
         {
             this.DatabaseId = ID;
